@@ -60,39 +60,38 @@ const App = () => {
   }
 
   const startTest = () => {
-    items.forEach((test, idx) => {
+    items.forEach(testItem => {
       // set all statuses to running
-      items[idx].status = RUNNING;
+      testItem.status = RUNNING;
       setItems([...items]);
-      test.run(result => {
-        // separate the test item from the rest of the state items [{}]
-        const filtered = items.filter(item => item.id !== test.id);
-        // recombine and sort by index 0 -> 5
-        const newItems = [...filtered, test].sort((a, b) => a.id - b.id);
+      testItem.run(result => {
         if (result) {
-          test.status = PASSED;
-          setItems([...newItems]);
+          // change test item's status
+          testItem.status = PASSED;
+          setItems([...items]);
         } else {
-          test.status = FAILED;
-          setItems([...newItems]);
+          // change test item's status
+          testItem.status = FAILED;
+          setItems([...items]);
         }
       });
     });
   };
 
   // get a count of the items statuses
-  const passedItems = items.filter(item => item.status === PASSED).length;
-  const failedItems = items.filter(item => item.status === FAILED).length;
-  const runningItems = items.filter(item => item.status === RUNNING).length;
+  const passedCount = items.filter(item => item.status === PASSED).length;
+  const failedCount = items.filter(item => item.status === FAILED).length;
+  const runningCount = items.filter(item => item.status === RUNNING).length;
+  const finished = passedCount + failedCount === items.length;
 
   return (
     <div>
       <div>total passed</div>
-      <div>{passedItems}</div>
+      <div>{passedCount}</div>
       <div>total failed</div>
-      <div>{failedItems}</div>
+      <div>{failedCount}</div>
       <div>total running</div>
-      <div>{runningItems}</div>
+      <div>{runningCount}</div>
       {items &&
         items.map(({ id, description, status }) => (
           <div key={id}>
@@ -100,7 +99,7 @@ const App = () => {
             <div>{status}</div>
           </div>
         ))}
-      {passedItems + failedItems === items.length && <div>{`${FINISHED}`}</div>}
+      {finished && <div>{`${FINISHED}`}</div>}
       <button onClick={startTest}>Start Tests</button>
     </div>
   );
